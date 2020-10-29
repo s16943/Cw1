@@ -6,30 +6,36 @@ using System.Threading.Tasks;
 
 namespace Cw1
 {
-    class Program
+    public class Program
     {
         public static async Task Main(string[] args)
         {
-            var url = "https://www.pja.edu.pl";
-            var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
+            
+            var url = args.Length > 0 ? args[0] : "http://www.pja.edu.pl";
+            
+            using (var httpClient = new HttpClient())
             {
-                var htmlContent = await response.Content.ReadAsStringAsync();
-                var regex = new Regex("[a-z]+[a-z0-9]*@[a-z0-9]+\\.[a-z]+", RegexOptions.IgnoreCase);
-                var matches = regex.Matches(htmlContent);
-
-                foreach (var match in matches)
+                using (var response = await httpClient.GetAsync(url))
                 {
-                    Console.WriteLine(match.ToString());
+
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var htmlContent = await response.Content.ReadAsStringAsync();
+                        var regex = new Regex("[a-z]+[a-z0-9]*@[a-z0-9]+\\.[a-z]+", RegexOptions.IgnoreCase);
+
+                        var matches = regex.Matches(htmlContent);
+
+                        foreach (var match in matches)
+                        {
+                            Console.WriteLine(match.ToString());
+                        }
+                    }
+
                 }
+                httpClient.Dispose();
             }
-
-
-
         }
     }
+
 }
-
-
